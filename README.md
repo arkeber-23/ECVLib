@@ -25,4 +25,4 @@ Para asegurarse de que los estilos se carguen correctamente, es esencial definir
 3. Desarrolla tu aplicación siguiendo el patrón MVC en los directorios app/Controllers, app/Models, y resources/Views, las vistas deben tener la extensión .phtml.
 
 
-[Donar😘](https://www.paypal.me/detoditoeber23")
+[Donar😘](https://www.paypal.me/detoditoeber23)
