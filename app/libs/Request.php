@@ -10,6 +10,7 @@ class Request
     protected $url;
     protected $parameters;
     protected $files;
+    protected $headers;
 
 
     public function __construct()
@@ -19,6 +20,7 @@ class Request
         $this->url = $_SERVER['PATH_INFO'] ?? '/';
         $this->prepareParams();
         $this->prepareFiles();
+        $this->headers = getallheaders();
     }
 
     protected function prepareParams()
@@ -32,7 +34,7 @@ class Request
                 $params = $_POST;
             }
         }
-        $this->parameters = filter_var_array($params?? [], FILTER_SANITIZE_SPECIAL_CHARS);
+        $this->parameters = filter_var_array($params ?? [], FILTER_SANITIZE_SPECIAL_CHARS);
     }
 
     protected function prepareFiles()
@@ -40,29 +42,40 @@ class Request
         $this->files = filter_var_array($_FILES ?? [], FILTER_SANITIZE_SPECIAL_CHARS);
     }
 
-	public function getContentType() { 
- 		return $this->contentType; 
-	} 
+    public function getHeaders()
+    {
+        return $this->headers;
+    }
+
+    public function getContentType()
+    {
+        return $this->contentType;
+    }
 
 
-	public function getMethod() { 
- 		return $this->method; 
-	} 
+    public function getMethod()
+    {
+        return $this->method;
+    }
 
-	public function getUrl() { 
- 		return $this->url; 
-	} 
+    public function getUrl()
+    {
+        return $this->url;
+    }
 
 
-	public function getParameters() { 
- 		return $this->parameters; 
-	} 
+    public function getParameters()
+    {
+        return $this->parameters;
+    }
 
-	public function getFiles() { 
- 		return $this->files; 
-	} 
+    public function getFiles()
+    {
+        return $this->files;
+    }
 
-	public function setFiles($files) {  
-		$this->files = $files; 
-	} 
+    public function setFiles($files)
+    {
+        $this->files = $files;
+    }
 }

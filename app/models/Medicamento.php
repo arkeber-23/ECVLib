@@ -5,7 +5,7 @@ use easyphp\core\models\EasyModel;
 
 class Medicamento extends EasyModel 
 {
-    protected $table= "medicamentos";
+    protected $table= "name_table";
 
     public function __construct() {
         parent::__construct();

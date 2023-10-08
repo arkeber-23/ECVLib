@@ -132,6 +132,6 @@ class EasyOrm extends Database
     }
 
     public function lastInsertId(){
-        return self::$conn->lastInsertId();
+        return self::getConnection()->lastInsertId();
     }
 }

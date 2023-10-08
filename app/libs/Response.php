@@ -8,6 +8,7 @@ class Response
     public static function code_response($code)
     {
         http_response_code($code);
+        return new self();
     }
 
     public static function json($data = [])
