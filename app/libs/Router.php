@@ -40,10 +40,13 @@ class Router
             $callback = self::$routes[$method][$url];
         }
         if (!is_null($callback)) {
-            call_user_func($callback,$request);
+            call_user_func($callback, $request);
         } else {
             http_response_code(404);
-            echo "Página no encontrada";
+            echo <<<HTML
+                <h1>Error 404 💔</h1>
+                <p>Página no encontrada</p>
+            HTML;
         }
     }
 }

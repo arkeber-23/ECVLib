@@ -3,11 +3,15 @@
 namespace app\controllers;
 
 use app\libs\Response;
+use app\models\Medicamento;
 
 class HomeController
 {
     public function index()
     {
-        Response::view('welcome.say_hello',['page' => 'Index 😘']);
+        $data = [
+            'page' => 'Index 😘',
+        ];
+        Response::view('welcome.say_hello', $data);
     }
 }
