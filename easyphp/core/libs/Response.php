@@ -1,6 +1,6 @@
 <?php
 
-namespace app\libs;
+namespace easyphp\core\libs;
 
 class Response
 {
@@ -17,6 +17,9 @@ class Response
         echo json_encode($data);
     }
 
+
+    
+
     public static function view($viewName, $data = [])
     {
        
@@ -25,7 +28,7 @@ class Response
             echo "Nombre de vista no válido";
             return;
         }
-        $viewPath = __DIR__ . '/../../resources/views/' . str_replace('.', '/', $viewName) . '.phtml';
+        $viewPath = __DIR__ . '/../../../resources/views/' . str_replace('.', '/', $viewName) . '.phtml';
 
         if (!file_exists($viewPath)) {
             self::code_response(400);

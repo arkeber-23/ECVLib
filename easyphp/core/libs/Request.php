@@ -1,6 +1,6 @@
 <?php
 
-namespace app\libs;
+namespace easyphp\core\libs;
 
 class Request
 {

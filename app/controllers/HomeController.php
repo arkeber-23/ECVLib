@@ -2,16 +2,17 @@
 
 namespace app\controllers;
 
-use app\libs\Request;
-use app\libs\Response;
-
+use app\models\Medicamento;
+use easyphp\core\libs\Response;
 
 class HomeController
 {
     public function index()
     {
+        $medicamento = new Medicamento();
         $data = [
             'page' => 'Index 😘',
+            'content' => "Welcome to EasyPHP lite Framework ❤",
 
         ];
         Response::view('welcome.say_hello', $data);
@@ -20,6 +21,7 @@ class HomeController
     public function say(){
         Response::view('welcome.say_hello', [
             'page' => 'Say 😘',
+            'content' => "Hello to EasyPHP lite Framework ❤",
         ]);}
 
 
@@ -43,7 +45,19 @@ class HomeController
                     "name" => "Mahmoud",
                     "lastname" => "Alaa",
 
+                ],
+                [
+                    "id" => 4,
+                    "name" => "Ahmed",
+                    "lastname" => "Mahmoud",
+                ],
+                [
+                    "id" => 5,
+                    "name" => "Mohamed",
+                    "lastname" => "Mahmoud",
+                    
                 ]
+                
             ]
         ]);
     }

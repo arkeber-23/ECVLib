@@ -2,7 +2,7 @@
 
 namespace app\helpers;
 
-use app\libs\Response;
+use easyphp\core\libs\Response;
 
 class Helpers
 {

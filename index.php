@@ -1,8 +1,11 @@
 <?php
+
+use easyphp\core\libs\Request;
+use easyphp\core\libs\Router;
+
 require_once __DIR__ .'/autoload.php';
-require_once __DIR__ .'/app/config/config.php';
-use app\libs\Request;
-use app\libs\Router;
+require_once __DIR__ .'/easyphp/config/config.php';
+
 
 $request = new Request();
 $router = new Router();

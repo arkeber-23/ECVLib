@@ -2,7 +2,8 @@
 
 namespace easyphp\core\easyorm;
 
-use app\db\Database;
+use easyphp\core\db\Database;
+use Easyphp\Core\Logs\ErrorLog;
 use PDO;
 use PDOException;
 
@@ -12,17 +13,18 @@ class EasyOrm extends Database
     protected $table;
     private $stmt;
     private $sql;
-  
+
 
     public function select($column = ['*'])
     {
         try {
             $column = implode(',', $column);
-            $this->sql = "SELECT $column FROM $this->table";
+
+            $this->sql = "SELECT $column FROM $this->table;";
             $this->stmt = self::getConnection()->prepare($this->sql);
             return $this;
         } catch (PDOException $e) {
-            echo $e->getMessage();
+            ErrorLog::notify(date("Y-m-d H:i:s") . " Error in select" . $this->table . ": " . $e->getMessage());
         }
     }
 
@@ -46,7 +48,7 @@ class EasyOrm extends Database
             $statement->execute();
             return $statement->rowCount() > 0;
         } catch (PDOException $e) {
-            echo $e->getMessage();
+            ErrorLog::notify(date("Y-m-d H:i:s") . " Error in insert" . $this->table . ": " . $e->getMessage());
         }
     }
     public function update($column, $id, $data)
@@ -70,7 +72,7 @@ class EasyOrm extends Database
             $statement->execute();
             return $statement->rowCount() > 0;
         } catch (PDOException $e) {
-            echo $e->getMessage();
+            ErrorLog::notify(date("Y-m-d H:i:s") . " Error in update" . $this->table . ": " . $e->getMessage());
         }
     }
 
@@ -84,7 +86,7 @@ class EasyOrm extends Database
             $statement->execute();
             return $statement->rowCount() > 0;
         } catch (PDOException $e) {
-            echo $e->getMessage();
+            ErrorLog::notify(date("Y-m-d H:i:s") . " Error in delete" . $this->table . ": " . $e->getMessage());
         }
     }
 
@@ -97,7 +99,7 @@ class EasyOrm extends Database
             $this->stmt->bindValue(':id', $id, PDO::PARAM_INT);
             return $this;
         } catch (PDOException $e) {
-            echo $e->getMessage();
+            ErrorLog::notify(date("Y-m-d H:i:s") . " Error in where" . $this->table . ": " . $e->getMessage());
         }
     }
 
@@ -107,7 +109,7 @@ class EasyOrm extends Database
             $this->sql .= " INNER JOIN $table ON $this->table.$column = $table.$column";
             return $this;
         } catch (PDOException $e) {
-            echo $e->getMessage();
+            ErrorLog::notify(date("Y-m-d H:i:s") . " Error in join" . $this->table . ": " . $e->getMessage());
         }
     }
 
@@ -117,21 +119,22 @@ class EasyOrm extends Database
             $this->stmt->execute();
             return $this->stmt->fetchAll(PDO::FETCH_OBJ);
         } catch (PDOException $e) {
-            echo $e->getMessage();
+            ErrorLog::notify(date("Y-m-d H:i:s") . " Error in all" . $this->table . ": " . $e->getMessage());
         }
-    
     }
 
-    public function one(){
+    public function one()
+    {
         try {
             $this->stmt->execute();
             return $this->stmt->fetch(PDO::FETCH_OBJ);
         } catch (PDOException $e) {
-            echo $e->getMessage();
+            ErrorLog::notify(date("Y-m-d H:i:s") . " Error in one" . $this->table . ": " . $e->getMessage());
         }
     }
 
-    public function lastInsertId(){
+    public function lastInsertId()
+    {
         return self::getConnection()->lastInsertId();
     }
 }

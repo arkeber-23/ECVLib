@@ -1,10 +1,11 @@
 <?php
+
 use app\helpers\Helpers;
 
-Helpers::header($data)?>
+Helpers::header($data) ?>
 
 <style>
-    .hellow{
+    .hellow {
         color: #8E44AD;
         text-align: center;
         font-size: 50px;
@@ -16,8 +17,6 @@ Helpers::header($data)?>
         margin-right: 20px;
     }
 </style>
-<h1 class="hellow">Hello World 💘</h1>
-
-
-<?php 
-Helpers::footer()?>
+<h1 class="hellow"><?= $content ?></h1>
+<?php
+Helpers::footer() ?>

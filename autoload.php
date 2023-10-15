@@ -1,6 +1,6 @@
 <?php
 
-use app\libs\Response;
+use easyphp\core\libs\Response;
 
 function loadClass($class)
 {
