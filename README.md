@@ -194,6 +194,137 @@ $resultados = $user
     ->join('profile', 'user_id', '=', 'id')
     ->get();
 ```
+## Creación de una migración
+Para crear una migración que defina una tabla 'Test' con varios campos, simplemente sigue el siguiente ejemplo en tu archivo de migración:
+
+```php
+public function up()
+{
+    GenerateSql::create('Test', function (Table $table) {
+        $table->id(); 
+        $table->string('nombre', 100);
+        $table->text('descripcion');
+        $table->integer('edad'); 
+        $table->float('precio', ['precision' => 10, 'scale' => 2]);
+        $table->date('fecha_nacimiento'); 
+        $table->timeStamps();
+    });
+}
+
+```
+## Tipos de Datos Permitidos
+
+El Generador de Migraciones Fácil te permite definir campos de diferentes tipos de datos en tus migraciones. A continuación se presentan los tipos de datos permitidos y cómo utilizarlos en tus migraciones:
+
+### Campos de Texto
+
+#### `string($name, $length = 50, $parameters = [])`
+Crea un campo de tipo VARCHAR con un nombre dado y una longitud máxima personalizable.
+
+#### `char($name, $parameters = [])`
+Crea un campo de tipo CHAR con un nombre dado y una longitud personalizable (predeterminada a 1 caracter).
+
+#### `text($name)`
+Crea un campo de tipo TEXT.
+
+#### `tinyText($name, $parameters = [])`
+Crea un campo de tipo TINYTEXT con un nombre dado y una longitud máxima personalizable (hasta 255 caracteres).
+
+#### `mediumText($name)`
+Crea un campo de tipo MEDIUMTEXT.
+
+#### `longText($name)`
+Crea un campo de tipo LONGTEXT.
+
+### Campos de Blob (Datos Binarios)
+
+#### `blob($name)`
+Crea un campo de tipo BLOB.
+
+#### `tinyBlob($name, $parameters = [])`
+Crea un campo de tipo TINYBLOB con un nombre dado y una longitud máxima personalizable (hasta 255 bytes).
+
+#### `mediumBlob($name)`
+Crea un campo de tipo MEDIUMBLOB.
+
+#### `longBlob($name)`
+Crea un campo de tipo LONGBLOB.
+
+### Campos de Enumeración y Conjunto
+
+#### `enum($name, $parameters = [])`
+Crea un campo de tipo ENUM con un nombre dado y los valores permitidos especificados en los parámetros.
+
+#### `set($name, $parameters = [])`
+Crea un campo de tipo SET con un nombre dado y los valores permitidos especificados en los parámetros.
+
+### Campos Numéricos
+
+#### `integer($name)`
+Crea un campo de tipo INTEGER.
+
+#### `tinyInteger($name, $parameters = [])`
+Crea un campo de tipo TINYINT con un nombre dado y la longitud personalizable (predeterminada a 1 byte).
+
+#### `smallInteger($name, $parameters = [])`
+Crea un campo de tipo SMALLINT.
+
+#### `mediumInteger($name, $parameters = [])`
+Crea un campo de tipo MEDIUMINT.
+
+#### `bigInteger($name, $parameters = [])`
+Crea un campo de tipo BIGINT.
+
+#### `unsignedInteger($name, $parameters = [])`
+Crea un campo de tipo UNSIGNED INTEGER con un nombre dado y los parámetros opcionales.
+
+### Campos de Punto Flotante y Decimal
+
+#### `float($name, $parameters = [])`
+Crea un campo de tipo FLOAT con un nombre dado y parámetros opcionales de precisión y escala.
+
+#### `decimal($name, $parameters = [])`
+Crea un campo de tipo DECIMAL con un nombre dado y parámetros opcionales de precisión y escala.
+
+#### `numeric($name, $parameters = [])`
+Crea un campo de tipo NUMERIC con un nombre dado y parámetros opcionales de precisión y escala.
+
+#### `double($name, $parameters = [])`
+Crea un campo de tipo DOUBLE.
+
+#### `real($name, $parameters = [])`
+Crea un campo de tipo REAL.
+
+### Campos de Fecha y Hora
+
+#### `date($name, $parameters = [])`
+Crea un campo de tipo DATE.
+
+#### `datetime($name, $parameters = [])`
+Crea un campo de tipo DATETIME.
+
+#### `time($name, $parameters = [])`
+Crea un campo de tipo TIME.
+
+#### `timestamp($name, $parameters = [])`
+Crea un campo de tipo TIMESTAMP.
+
+#### `year($name, $parameters = [])`
+Crea un campo de tipo YEAR.
+
+### Campos de Marcas de Tiempo
+
+#### `timeStamps()`
+Agrega dos campos de marca de tiempo 'created_at' y 'updated_at' para el seguimiento de creación y actualización de registros.
+
+### Clave Foránea (Clave Externa)
+
+#### `foreign($name, $parameters = [])`
+Crea un campo de clave foránea (FOREIGN KEY) con un nombre dado y los parámetros opcionales.
+
+Asegúrate de ajustar los nombres de los métodos y los parámetros según tus necesidades y la configuración de tu base de datos.
+
+
 ## Thor CLI
 
 Thor es una herramienta de línea de comandos que facilita la creación y migración de archivos en EasyPHP. Te permite generar rápidamente archivos esenciales para tu aplicación.
