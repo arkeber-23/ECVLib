@@ -6,6 +6,7 @@
  * Esta clase proporciona una funcionalidad de enrutamiento simple para dirigir las solicitudes HTTP
  * a controladores y acciones específicas.
  */
+
 namespace easyphp\core\libs;
 
 class Router
@@ -21,6 +22,12 @@ class Router
      * Almacena una pila de prefijos de ruta utilizados en las rutas definidas.
      */
     private static $prefixStack = [];
+
+    public function __construct()
+    {
+        $this->register();
+    }
+
 
     /**
      * Define una ruta GET.
@@ -104,9 +111,13 @@ class Router
      *
      * @param string $filename
      */
-    public function register($filename)
+    private function register()
     {
-        include_once __DIR__ . '/../../../app/routes/' . $filename . '.php';
+        $_dir = __DIR__ . '/../../../app/routes/';
+        $files = glob($_dir . '*');
+        foreach ($files as $filename) {
+            require_once $filename;
+        }
     }
 
     /**
@@ -119,14 +130,13 @@ class Router
         $callback = null;
         $method = $request->getMethod();
         $url = $request->getUrl();
-
         if (isset(self::$routes[$method][$url])) {
             $callback = self::$routes[$method][$url];
         }
         if (!is_null($callback)) {
             call_user_func($callback, $request);
         } else {
-            http_response_code(404);
+            Response::http_code(404);
             echo <<<HTML
                 <h1>Error 404 💔</h1>
                 <p>Página no encontrada</p>

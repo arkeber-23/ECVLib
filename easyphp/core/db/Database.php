@@ -29,7 +29,7 @@ class Database
             $url = "$db_driver:host=$host;dbname=$db_name;charset=$db_charset";
             self::$conn = new PDO($url, $db_user, $db_password, $opciones);
         } catch (PDOException $e) {
-            return "Error en la conexión a la base de datos: " . $e->getMessage();
+            return "Error in the connection: " . $e->getMessage();
         }
 
         if (is_null(self::$conn)) {

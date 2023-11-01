@@ -17,7 +17,7 @@ class Request
     {
         $this->contentType = $_SERVER['CONTENT_TYPE'] ?? '';
         $this->method = strtoupper($_SERVER['REQUEST_METHOD']);
-        $this->url = $_SERVER['PATH_INFO'] ?? '/';
+        $this->url = $_SERVER['PATH_INFO'] ?? '';
         $this->prepareParams();
         $this->prepareFiles();
         $this->headers = getallheaders();
@@ -67,6 +67,10 @@ class Request
     public function getParameters()
     {
         return $this->parameters;
+    }
+
+    public function searchParam($name){
+        return $this->parameters[$name] ?? 'Parameter not found';
     }
 
     public function getFiles()

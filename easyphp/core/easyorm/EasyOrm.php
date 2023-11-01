@@ -13,22 +13,30 @@ class EasyOrm extends Database
     protected $table;
     private $stmt;
     private $sql;
+    private $prueba;
 
-
+    /**
+     * Selects data from the database table.
+     *
+     * @param array $column The columns to select. Default is ['*'].
+     * @throws PDOException If there is an error executing the SQL query.
+     * @return $this The current instance of the class.
+     */
     public function select($column = ['*'])
     {
-        try {
-            $column = implode(',', $column);
-
-            $this->sql = "SELECT $column FROM $this->table;";
-            $this->stmt = self::getConnection()->prepare($this->sql);
-            return $this;
-        } catch (PDOException $e) {
-            ErrorLog::notify(date("Y-m-d H:i:s") . " Error in select" . $this->table . ": " . $e->getMessage());
-        }
+        $column = is_array($column) ?  implode(',', $column) : $column;
+        $this->sql = "SELECT $column FROM $this->table";
+        return $this;
     }
 
-    public function insert($data)
+    /**
+     * Inserts data into the table.
+     *
+     * @param mixed $data The data to be inserted.
+     * @throws PDOException If an error occurs during the insertion process.
+     * @return bool Returns true if the insertion is successful, false otherwise.
+     */
+    public function insert($data = [])
     {
         try {
             $columns = array_keys($data);
@@ -48,10 +56,19 @@ class EasyOrm extends Database
             $statement->execute();
             return $statement->rowCount() > 0;
         } catch (PDOException $e) {
-            ErrorLog::notify(date("Y-m-d H:i:s") . " Error in insert" . $this->table . ": " . $e->getMessage());
+            ErrorLog::notify(date("Y-m-d H:i:s") . " Error in insert " . $this->table . ": " . $e->getMessage());
         }
     }
-    public function update($column, $id, $data)
+    /**
+     * Updates a record in the database table.
+     *
+     * @param string $column The column to search for the record.
+     * @param mixed $id The ID of the record to update.
+     * @param array $data An associative array containing the updated data.
+     * @throws PDOException If there is an error executing the SQL statement.
+     * @return bool Returns true if the record was successfully updated, false otherwise.
+     */
+    public function update($id, $data = [], $column = 'id')
     {
         try {
             $columns = array_keys($data);
@@ -72,10 +89,18 @@ class EasyOrm extends Database
             $statement->execute();
             return $statement->rowCount() > 0;
         } catch (PDOException $e) {
-            ErrorLog::notify(date("Y-m-d H:i:s") . " Error in update" . $this->table . ": " . $e->getMessage());
+            ErrorLog::notify(date("Y-m-d H:i:s") . " Error in update " . $this->table . ": " . $e->getMessage());
         }
     }
 
+    /**
+     * Deletes a record from the database table based on the given column and ID.
+     *
+     * @param string $column The column name to match against.
+     * @param int $id The ID of the record to delete.
+     * @throws PDOException If an error occurs while executing the delete query.
+     * @return bool Returns true if the record was successfully deleted, false otherwise.
+     */
     public function delete($column, $id)
     {
         $id = intval($id);
@@ -86,55 +111,145 @@ class EasyOrm extends Database
             $statement->execute();
             return $statement->rowCount() > 0;
         } catch (PDOException $e) {
-            ErrorLog::notify(date("Y-m-d H:i:s") . " Error in delete" . $this->table . ": " . $e->getMessage());
+            ErrorLog::notify(date("Y-m-d H:i:s") . " Error in delete " . $this->table . ": " . $e->getMessage());
         }
     }
 
-    public function where($column, $id)
+
+    /**
+     * Sets the WHERE clause for the SQL query.
+     *
+     * @param string $column The column name.
+     * @param mixed $value The value to compare against.
+     * @param string $operator The comparison operator. Defaults to '='.
+     * @return $this The current instance of the class.
+     */
+    public function where($column, $value, $operator = '=')
     {
-        $id = intval($id);
+        $validOperators = ['=', '>', '<', '>=', '<=', '!=', '<>', 'LIKE', 'BETWEEN', 'IN'];
+
+        $operator = in_array($operator, $validOperators) ? $operator : '=';
+
+        $whereClause = (strpos($this->sql, 'WHERE') === false) ? ' WHERE ' : ' AND ';
+
+        if ($operator == 'IN') {
+            $value = '(' . implode(', ', $value) . ')';
+        } elseif ($operator == 'BETWEEN') {
+            $value = $value[0] . ' AND ' . $value[1];
+        } else {
+            $value = "'$value'";
+        }
+
+        $this->sql .= $whereClause . "$column $operator $value";
+
+        return $this;
+    }
+
+
+    /**
+     * Join a table with the current query.
+     *
+     * @param string $table The name of the table to join.
+     * @param string $firstColumn The column on which to perform the join.
+     * @param string $operator The operator to use for the join.
+     * @param string|null $secondColumn The column to join on, or null if using only the first column.
+     * @param string $type The type of join to perform. Must be one of: inner, left, right, full, cross.
+     * @param string|bool $where The WHERE condition for the join, or false to exclude.
+     * @throws \InvalidArgumentException If an invalid join type is provided.
+     * @return $this Returns the current instance of the class for method chaining.
+     */
+    public function join($table, $firstColumn, $operator = '=', $secondColumn = null, $type = 'inner', $where = false)
+    {
+        $allowedTypes = ['inner', 'left', 'right', 'full', 'cross'];
+
+        if (!in_array($type, $allowedTypes)) {
+            throw new \InvalidArgumentException("Invalid join type: $type");
+        }
+
+        $joinSql = " $type JOIN $table";
+
+        if ($secondColumn === null) {
+            $joinSql .= " ON $firstColumn";
+        } else {
+            $joinSql .= " ON $this->table.$firstColumn $operator $table.$secondColumn";
+        }
+
+        if ($where) {
+            $joinSql .= " WHERE $where";
+        }
+
+        $this->sql .= $joinSql;
+
+        return $this;
+    }
+
+
+    /**
+     * Set the column to order the result set by.
+     *
+     * @param string $column The name of the column to order by.
+     * @param string $direction The direction to order the result set in. Defaults to 'asc'.
+     * @return $this The current instance of the class.
+     */
+    public function orderBy($column, $direction = 'asc')
+    {
+        $this->sql .= " ORDER BY $this->table.$column $direction";
+        return $this;
+    }
+
+    /**
+     * Groups the query results by a specified column.
+     *
+     * @param string $column The column to group by.
+     * @return $this The current instance of the class.
+     */
+    public function groupBy($column)
+    {
+        $this->sql .= " GROUP BY $this->table.$column";
+        return $this;
+    }
+
+    /**
+     * Executes the SQL statement and returns all rows as an array of objects.
+     *
+     * @throws PDOException if an error occurs during the execution of the SQL statement.
+     * @return array an array containing all rows fetched as objects.
+     */
+    public function get()
+    {
         try {
-            $this->sql .= " WHERE $this->table.$column = :id";
             $this->stmt = self::getConnection()->prepare($this->sql);
-            $this->stmt->bindValue(':id', $id, PDO::PARAM_INT);
-            return $this;
-        } catch (PDOException $e) {
-            ErrorLog::notify(date("Y-m-d H:i:s") . " Error in where" . $this->table . ": " . $e->getMessage());
-        }
-    }
-
-    public function join($table, $column)
-    {
-        try {
-            $this->sql .= " INNER JOIN $table ON $this->table.$column = $table.$column";
-            return $this;
-        } catch (PDOException $e) {
-            ErrorLog::notify(date("Y-m-d H:i:s") . " Error in join" . $this->table . ": " . $e->getMessage());
-        }
-    }
-
-    public function all()
-    {
-        try {
             $this->stmt->execute();
             return $this->stmt->fetchAll(PDO::FETCH_OBJ);
         } catch (PDOException $e) {
-            ErrorLog::notify(date("Y-m-d H:i:s") . " Error in all" . $this->table . ": " . $e->getMessage());
+            ErrorLog::notify(date("Y-m-d H:i:s") . " Error in all " . $this->table . ": " . $e->getMessage());
         }
     }
 
-    public function one()
+    /**
+     * Executes the SQL statement and returns the first row of the result as an object.
+     *
+     * @throws PDOException If an error occurs while executing the statement.
+     * @return object|null The first row of the result as an object, or null if there are no rows.
+     */
+    public function first()
     {
         try {
+            $this->stmt = self::getConnection()->prepare($this->sql);
             $this->stmt->execute();
             return $this->stmt->fetch(PDO::FETCH_OBJ);
         } catch (PDOException $e) {
-            ErrorLog::notify(date("Y-m-d H:i:s") . " Error in one" . $this->table . ": " . $e->getMessage());
+            ErrorLog::notify(date("Y-m-d H:i:s") . " Error in one " . $this->table . ": " . $e->getMessage());
         }
     }
 
+    /**
+     * Retrieves the last inserted ID from the database.
+     *
+     * @return string The last inserted ID.
+     */
     public function lastInsertId()
     {
-        return self::getConnection()->lastInsertId();
+        return self::getConnection()->lastInsertId($this->table);
     }
 }

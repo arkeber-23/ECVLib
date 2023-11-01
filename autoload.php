@@ -7,8 +7,8 @@ function loadClass($class)
     $class = str_replace('\\', '/', $class) . '.php';
     $file = __DIR__ . '/' . $class;
     if (!file_exists($file)) {
-        Response::code_response(404);
-        echo "Hola mudno";
+        Response::http_code(404);
+        echo $class.' not found';
         exit;
     }
 
