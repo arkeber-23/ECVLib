@@ -1,0 +1,22 @@
+{
+    "name": "arkeber-23/ecvlib",
+    "description": "ECVLib es una libreria diseñada para simplificar el proceso de dasarrollo web, permitiendote crear sitios web de manera rápida y eficiente.",
+    "type": "project",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/",
+            "Kernel\\": "Kernel/"
+        }
+    },
+    "authors": [
+        {
+            "name": "arkeber-23",
+            "email": "cabezasever@yahoo.com"
+        }
+    ],
+    "minimum-stability": "beta",
+    "require": {
+        "php": ">=8"
+    }
+}

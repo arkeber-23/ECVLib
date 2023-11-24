@@ -1,0 +1,25 @@
+<form action="<?= BASE_URL ?>/hola" method="POST" style="display: flex; flex-direction: column; gap: 10px; width: 300px">
+
+    <input type="text" name="name" value="<?= $_SESSION['old_values']['name'] ?? '' ?>">
+    <?php if (isset($_SESSION['form_errors']['name'])) : ?>
+        <span style="color: red;font-size: 12px"><?= $_SESSION['form_errors']['name'] ?></span>
+    <?php endif; ?>
+
+
+    <input type="email" name="email" value="<?= $_SESSION['old_values']['email'] ?? '' ?>">
+    <?php if (isset($_SESSION['form_errors']['email'])) : ?>
+        <span style="color: red;font-size: 12px"><?= $_SESSION['form_errors']['email'] ?></span>
+    <?php endif; ?>
+
+
+    <input type="password" name="password" value="<?= $_SESSION['old_values']['password'] ?? '' ?>">
+    <?php if (isset($_SESSION['form_errors']['password'])) : ?>
+        <span style="color: red;font-size: 12px"><?= $_SESSION['form_errors']['password'] ?? '' ?></span>
+    <?php endif; ?>
+
+    <input type="text" name="number" value="<?= $_SESSION['old_values']['number'] ?? '' ?>">
+    <?php if (isset($_SESSION['form_errors']['number'])) : ?>
+        <span style="color: red;font-size: 12px"><?= $_SESSION['form_errors']['number'] ?? '' ?></span>
+    <?php endif; ?>
+    <input type="submit">
+</form>
