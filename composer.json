@@ -15,7 +15,7 @@
             "email": "cabezasever@yahoo.com"
         }
     ],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "require": {
         "php": ">=8"
     }

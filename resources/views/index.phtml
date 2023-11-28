@@ -1,25 +1,30 @@
-<form action="<?= BASE_URL ?>/hola" method="POST" style="display: flex; flex-direction: column; gap: 10px; width: 300px">
+<!DOCTYPE html>
+<html lang="es">
 
-    <input type="text" name="name" value="<?= $_SESSION['old_values']['name'] ?? '' ?>">
-    <?php if (isset($_SESSION['form_errors']['name'])) : ?>
-        <span style="color: red;font-size: 12px"><?= $_SESSION['form_errors']['name'] ?></span>
-    <?php endif; ?>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/resources/assets/css/style.css">
+    <title>ECVLib</title>
+</head>
 
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <h2><a class="navbar-title" href="<?= BASE_URL ?>">ECVLib</a></h2>
+            <ul class="nav">
+                <li><a class="nav-link" href="https://github.com/arkeber-23/ECVLib" target="_blank">Github</a></li>
+                <li><a class="nav-link" href="https://github.com/arkeber-23/ECVLib_docs" target="_blank">Documentación</a></li>
+            </ul>
+        </div>
+    </nav>
 
-    <input type="email" name="email" value="<?= $_SESSION['old_values']['email'] ?? '' ?>">
-    <?php if (isset($_SESSION['form_errors']['email'])) : ?>
-        <span style="color: red;font-size: 12px"><?= $_SESSION['form_errors']['email'] ?></span>
-    <?php endif; ?>
+    <main class="main">
+        <p>ECVLib es una biblioteca diseñada para simplificar el desarrollo web en PHP, proporcionando una amplia gama de herramientas y funciones que agilizan la creación de sitios web de manera eficiente. Con ECVLib, los desarrolladores pueden aprovechar una serie de características diseñadas para facilitar tanto el proceso de desarrollo como el despliegue de sus aplicaciones web. Desde funciones mejoradas de manipulación de datos hasta herramientas optimizadas para la interacción con bases de datos, ECVLib se presenta como una solución integral para mejorar la productividad y acelerar el ciclo de desarrollo.</p>
 
+        <p>Esta biblioteca, aunque ahora lleva el nombre de ECVLib, sigue manteniendo la filosofía central de simplificar las tareas comunes en PHP y mejorar la experiencia de desarrollo web. Al elegir ECVLib, los desarrolladores pueden beneficiarse de un conjunto de herramientas flexible y modular, adaptándolo a sus necesidades específicas y optimizando la eficiencia en el desarrollo de sitios web dinámicos. Con un enfoque en la accesibilidad y la eficiencia, ECVLib se posiciona como una opción valiosa para aquellos que buscan una biblioteca versátil y fácil de usar en el entorno de desarrollo PHP.</p>
+        <a  class="nav-link" href="https://www.paypal.com/paypalme/detoditoeber23" target="_blank">Donar a ECVLib </a>
+    </main>
+</body>
 
-    <input type="password" name="password" value="<?= $_SESSION['old_values']['password'] ?? '' ?>">
-    <?php if (isset($_SESSION['form_errors']['password'])) : ?>
-        <span style="color: red;font-size: 12px"><?= $_SESSION['form_errors']['password'] ?? '' ?></span>
-    <?php endif; ?>
-
-    <input type="text" name="number" value="<?= $_SESSION['old_values']['number'] ?? '' ?>">
-    <?php if (isset($_SESSION['form_errors']['number'])) : ?>
-        <span style="color: red;font-size: 12px"><?= $_SESSION['form_errors']['number'] ?? '' ?></span>
-    <?php endif; ?>
-    <input type="submit">
-</form>
+</html>

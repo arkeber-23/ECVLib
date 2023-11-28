@@ -10,6 +10,7 @@ class TitanOrm extends Connection
 {
 
     protected $table;
+    protected $data = [];
     private $stmt;
     private $sql;
 
@@ -36,27 +37,20 @@ class TitanOrm extends Connection
      */
     public function insert($data = [])
     {
-        try {
-            $columns = array_keys($data);
-            $values = array_values($data);
-            $columnNames = implode(', ', $columns);
-            $placeholders = implode(', ', array_map(function ($column) {
-                return ':' . $column;
-            }, $columns));
-
-            $this->sql = "INSERT INTO $this->table ($columnNames) VALUES ($placeholders)";
-            $statement = self::getConnection()->prepare($this->sql);
-
-            foreach ($columns as $index => $column) {
-                $statement->bindValue(':' . $column, $values[$index]);
-            }
-
-            $statement->execute();
-            return $statement->rowCount() > 0;
-        } catch (PDOException $e) {
-            echo (date("Y-m-d H:i:s") . " Error in insert " . $this->table . ": " . $e->getMessage());
-        }
+        $this->data = $data;
+        return $this->executeInsert();
     }
+
+
+    public function save()
+    {
+        if (is_null($this->data)) {
+            throw new PDOException('data cannot be null');
+        }
+
+        return $this->executeInsert();
+    }
+
     /**
      * Updates a record in the database table.
      *
@@ -66,11 +60,11 @@ class TitanOrm extends Connection
      * @throws PDOException If there is an error executing the SQL statement.
      * @return bool Returns true if the record was successfully updated, false otherwise.
      */
-    public function update($data = [],$column = 'id',$id=null)
+    public function update($data = [], $column = 'id', $id = null)
     {
         try {
 
-            if(is_null($id)){
+            if (is_null($id)) {
                 throw new PDOException('id cannot be null');
             }
             $columns = array_keys($data);
@@ -91,7 +85,7 @@ class TitanOrm extends Connection
             $statement->execute();
             return $statement->rowCount() > 0;
         } catch (PDOException $e) {
-           echo(date("Y-m-d H:i:s") . " Error in update " . $this->table . ": " . $e->getMessage());
+            echo (date("Y-m-d H:i:s") . " Error in update " . $this->table . ": " . $e->getMessage());
         }
     }
 
@@ -113,7 +107,7 @@ class TitanOrm extends Connection
             $statement->execute();
             return $statement->rowCount() > 0;
         } catch (PDOException $e) {
-            echo(date("Y-m-d H:i:s") . " Error in delete " . $this->table . ": " . $e->getMessage());
+            echo (date("Y-m-d H:i:s") . " Error in delete " . $this->table . ": " . $e->getMessage());
         }
     }
 
@@ -222,7 +216,9 @@ class TitanOrm extends Connection
         try {
             $this->stmt = self::getConnection()->prepare($this->sql);
             $this->stmt->execute();
-            return $this->stmt->fetchAll(PDO::FETCH_OBJ);
+            $result = $this->stmt->fetchAll(PDO::FETCH_OBJ);
+            $this->sql = '';
+            return $result;
         } catch (PDOException $e) {
             echo (date("Y-m-d H:i:s") . " Error in all " . $this->table . ": " . $e->getMessage());
         }
@@ -239,7 +235,9 @@ class TitanOrm extends Connection
         try {
             $this->stmt = self::getConnection()->prepare($this->sql);
             $this->stmt->execute();
-            return $this->stmt->fetch(PDO::FETCH_OBJ);
+            $result = $this->stmt->fetch(PDO::FETCH_OBJ);
+            $this->sql = '';
+            return $result;
         } catch (PDOException $e) {
             echo (date("Y-m-d H:i:s") . " Error in one " . $this->table . ": " . $e->getMessage());
         }
@@ -254,4 +252,60 @@ class TitanOrm extends Connection
     {
         return self::getConnection()->lastInsertId($this->table);
     }
+
+
+    /**
+     * Retrieves the count of records in the table.
+     *
+     * @throws PDOException when there is an error executing the SQL query.
+     * @return int The count of records in the table.
+     */
+    public function count(): string
+    {
+        try {
+            $countSql = "SELECT COUNT(*) FROM $this->table";
+            $countSql .= $this->sql;
+            $this->stmt = self::getConnection()->prepare($countSql);
+            $this->stmt->execute();
+            $count = $this->stmt->fetchColumn();
+            $this->sql = '';
+            return $count;
+        } catch (PDOException $e) {
+            echo (date("Y-m-d H:i:s") . " Error in count " . $this->table . ": " . $e->getMessage());
+        }
+    }
+
+
+    /**
+     * Executes the insert operation.
+     *
+     * @throws PDOException Error in insert {table}: {error message}
+     * @return bool Returns true if the insert operation is successful, false otherwise.
+     */
+    private function executeInsert()
+    {
+        try {
+            $columns = array_keys($this->data);
+            $values = array_values($this->data);
+            $columnNames = implode(', ', $columns);
+            $placeholders = implode(', ', array_map(function ($column) {
+                return ':' . $column;
+            }, $columns));
+
+            $this->sql = "INSERT INTO $this->table ($columnNames) VALUES ($placeholders)";
+
+            $statement = self::getConnection()->prepare($this->sql);
+
+            foreach ($columns as $index => $column) {
+                $statement->bindValue(':' . $column, $values[$index]);
+            }
+
+            $statement->execute();
+            $this->data = null;
+            return $statement->rowCount() > 0;
+        } catch (PDOException $e) {
+            echo (date("Y-m-d H:i:s") . " Error in insert " . $this->table . ": " . $e->getMessage());
+        }
+    }
+
 }

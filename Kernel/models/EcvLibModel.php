@@ -10,10 +10,10 @@ class EcvLibModel extends TitanOrm
      * @var array $data
      * Almacena los datos del modelo, que pueden ser accedidos y gestionados de manera dinámica.
      */
-    private $data = [];
+    protected $data = [];
 
     /**
-     * Constructor de la clase EasyModel.
+     * Constructor de la clase EcvLibModel.
      *
      * @param array|null $data
      * Permite inicializar la instancia del modelo con datos iniciales (opcional).
