@@ -3,6 +3,7 @@
 namespace Kernel\Core\EcvOrm;
 
 use Kernel\Core\DataBase\Connection;
+use Kernel\Core\Logger\Errors;
 use PDO;
 use PDOException;
 
@@ -85,7 +86,7 @@ class TitanOrm extends Connection
             $statement->execute();
             return $statement->rowCount() > 0;
         } catch (PDOException $e) {
-            echo (date("Y-m-d H:i:s") . " Error in update " . $this->table . ": " . $e->getMessage());
+            $this->setError('update', $e->getMessage());
         }
     }
 
@@ -107,10 +108,9 @@ class TitanOrm extends Connection
             $statement->execute();
             return $statement->rowCount() > 0;
         } catch (PDOException $e) {
-            echo (date("Y-m-d H:i:s") . " Error in delete " . $this->table . ": " . $e->getMessage());
+            $this->setError('delete', $e->getMessage());
         }
     }
-
 
     /**
      * Sets the WHERE clause for the SQL query.
@@ -220,7 +220,7 @@ class TitanOrm extends Connection
             $this->sql = '';
             return $result;
         } catch (PDOException $e) {
-            echo (date("Y-m-d H:i:s") . " Error in all " . $this->table . ": " . $e->getMessage());
+            $this->setError('get', $e->getMessage());
         }
     }
 
@@ -239,7 +239,7 @@ class TitanOrm extends Connection
             $this->sql = '';
             return $result;
         } catch (PDOException $e) {
-            echo (date("Y-m-d H:i:s") . " Error in one " . $this->table . ": " . $e->getMessage());
+            $this->setError('first', $e->getMessage());
         }
     }
 
@@ -271,7 +271,7 @@ class TitanOrm extends Connection
             $this->sql = '';
             return $count;
         } catch (PDOException $e) {
-            echo (date("Y-m-d H:i:s") . " Error in count " . $this->table . ": " . $e->getMessage());
+            $this->setError('count', $e->getMessage());
         }
     }
 
@@ -304,8 +304,15 @@ class TitanOrm extends Connection
             $this->data = null;
             return $statement->rowCount() > 0;
         } catch (PDOException $e) {
-            echo (date("Y-m-d H:i:s") . " Error in insert " . $this->table . ": " . $e->getMessage());
+            $this->setError('executeInsert', $e->getMessage());
         }
     }
 
+    private  function setError($err, $message)
+    {
+
+        $error = new Errors('TitanOrm', 'errors.log', 'debug');
+        $msg = sprintf("%s  [%s] - %s", date("Y-m-d H:i:s"), "Error in $err " . $this->table, $message);
+        $error->warning($msg);
+    }
 }

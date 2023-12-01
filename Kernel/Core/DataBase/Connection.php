@@ -20,14 +20,15 @@ class Connection
         if (!is_null(self::$conn)) {
             self::$conn = new Connection();
         }
+
         $db_driver = getenv('DB_DRIVER');
-        $host = getenv('HOST');
-        $port= getenv('PORT');
+        $host = getenv('DB_HOST');
+        $port = getenv('DB_PORT');
         $db_name = getenv('DB_NAME');
         $db_user = getenv('DB_USER');
         $db_password = getenv('DB_PASSWORD');
         $db_charset = getenv('DB_CHARSET');
-
+        
         try {
             $opciones = [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,

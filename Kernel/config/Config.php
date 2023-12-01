@@ -1,7 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Kernel\config;
+
+use Kernel\Core\Logger\Errors;
 
 class Config
 {
@@ -9,6 +12,8 @@ class Config
     public function __construct(protected string $timeZone, protected string $environment)
     {
         date_default_timezone_set($this->timeZone);
+        $errorsLogger = new Errors('ERRORS LOGGER ENVIRONMENT', 'errors.log', 'debug');
+        $this->typeEnvironment($errorsLogger);
         $this->configure();
         $this->initSession();
         $this->setEnvironment($this->environment);
@@ -34,7 +39,7 @@ class Config
     private function setEnvironment(string $environment): void
     {
         if (!file_exists($environment)) {
-            throw new \Exception('Environment file not found, please check your .env file');
+            throw new \Exception("Environment file '$environment' not found. Please check your .env file.");
         }
 
         $envContent = file_get_contents($environment);
@@ -53,5 +58,37 @@ class Config
                 putenv("$key=$value");
             }
         }
+    }
+
+    private function typeEnvironment(Errors $logger): void
+    {
+        $env_actual = getenv('APP_ENV');
+        $app_debug = getenv('APP_DEBUG');
+
+
+        if (in_array($env_actual, ['dev', 'development', 'local']) && $app_debug == 'true') {
+            $this->showError();
+            return;
+        } 
+        
+        if (in_array($env_actual, ['prod', 'production'])) {
+
+            if (($app_debug == 'false') && version_compare(PHP_VERSION, '8', '>=')) {
+                $logger->info('Production environment with debug off (PHP >= 8).');
+                error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT & ~E_USER_NOTICE & ~E_USER_DEPRECATED);
+                ini_set('display_errors', 'Off');
+            } else {
+                $logger->emergency('Application environment is not set correctly in production.');
+                header('HTTP/1.1 503 Service Unavailable.', true, 503);
+                throw new \Exception('The application environment is not set correctly.');
+            }
+        }
+    }
+
+    private function showError(): void
+    {
+        ini_set('display_errors', 'On');
+        ini_set('display_startup_errors', 'On');
+        error_reporting(E_ALL);
     }
 }
