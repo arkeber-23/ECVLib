@@ -28,13 +28,25 @@ class Connection
         $db_user = getenv('DB_USER');
         $db_password = getenv('DB_PASSWORD');
         $db_charset = getenv('DB_CHARSET');
-        
+
+        if ($db_driver === 'mysql') {
+            $url = "$db_driver:host=$host;port=$port;dbname=$db_name;charset=$db_charset";
+        } elseif ($db_driver === 'pgsql') {
+            $url = "$db_driver:host=$host;port=$port;dbname=$db_name";
+        } else {
+            $dir = __DIR__ . '/../../../src/Database';
+            if (!dir($dir)) {
+                mkdir($dir, 0777, true);
+            }
+            $db_name = !empty($db_name) ? $db_name :'database';
+            $url = "sqlite:$dir/$db_name" . ".sqlite";
+        }
+
         try {
             $opciones = [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_EMULATE_PREPARES => false,
             ];
-            $url = "$db_driver:host=$host;port=$port;dbname=$db_name;charset=$db_charset";
             self::$conn = new PDO($url, $db_user, $db_password, $opciones);
         } catch (PDOException $e) {
             throw new Exception("Error in the connection: " . $e->getMessage());

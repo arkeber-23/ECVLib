@@ -102,9 +102,9 @@ class Table implements ITypeData
     }
 
 
-    public function integer($name)
+    public function integer($name, $parameters = [])
     {
-        $this->addColumn(static::EASYPHP_INTEGER, $name);
+        $this->addColumn(static::EASYPHP_INTEGER, $name, $parameters);
     }
 
     public function tinyInteger($name, $parameters = [])

@@ -23,8 +23,10 @@ class AdapterSqlGenerator
                 return new MysqlGenerateSql();
             case 'pgsql':
                 return new PostGresGenerateSql();
+            case 'sqlite':
+                return new SqliteGenerateSql();
             default:
-                return new MysqlGenerateSql();
+                return new SqliteGenerateSql();
         }
     }
 
