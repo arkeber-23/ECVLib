@@ -103,6 +103,7 @@ class Router
         $callback = null;
         $method = $request->getMethod();
         $url = $request->getUrl();
+
         if (isset(self::$routes[$method][$url])) {
 
             $route = self::$routes[$method][$url];
@@ -113,7 +114,12 @@ class Router
 
 
             $next = function ($request, $response) use ($callback) {
-                call_user_func($callback, $request, $response);
+                if(is_array($callback) && count($callback) == 2) {
+                    $controllerInstance = new $callback[0]();
+                    call_user_func([$controllerInstance, $callback[1]], $request, $response);
+                }else{
+                    call_user_func($callback, $request, $response);
+                }
             };
 
             foreach ($middlewares as $middleware) {
